@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const mongoose = require('mongoose');
-//const validator = require('validator');
+const validator = require('validator');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Please provide your email'],
     unique: true,
     lowercase: true,
-    //validate: [validator.isEmail, 'Please provide a valid email']
+    validate: [validator.isEmail, 'Please provide a valid email']
   },
   photo: String,
   role: {
@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema({
     }
   },
   passwordChangedAt: Date,
-  passwordResetToken: String,  //password reset token 
+  passwordResetToken: String,
   passwordResetExpires: Date,
   active: {
     type: Boolean,
@@ -73,7 +73,6 @@ userSchema.pre(/^find/, function(next) {
   next();
 });
 
-//instance method
 userSchema.methods.correctPassword = async function(
   candidatePassword,
   userPassword
@@ -95,13 +94,9 @@ userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
   return false;
 };
 
-//reset password token is a random string and it is need not to be cryptographycally strong
-//using randomBytes() from built in crypto  module
 userSchema.methods.createPasswordResetToken = function() {
-  const resetToken = crypto.randomBytes(32).toString('hex'); //password reset token no.of characters and it is converted into hexadeximal string
-  //this token is sent to user to create a new password
+  const resetToken = crypto.randomBytes(32).toString('hex');
 
-  //encrypting the generated token
   this.passwordResetToken = crypto
     .createHash('sha256')
     .update(resetToken)
@@ -109,7 +104,7 @@ userSchema.methods.createPasswordResetToken = function() {
 
   console.log({ resetToken }, this.passwordResetToken);
 
-  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; 
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
 
   return resetToken;
 };
