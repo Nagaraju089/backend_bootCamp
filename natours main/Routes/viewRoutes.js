@@ -1,18 +1,18 @@
 const express = require('express');
+const viewsController = require('../controllers/viewsController');
+const authController = require('../controllers/authController');
+
 const router = express.Router();
-const viewController = require('../controllers/viewController')
 
-router.get('/',  (req, res) => {
-    res.status(200).render('base', {
-      tour: "The Forest Hiker",
-      user: "Jonas"
-  
-    })   //express automatically look for the 'base' file in the views folder
-  })
-  
-  router.get('/', viewController.getOverview);
-  
-  router.get('/tour', viewController.getTour);
+router.get('/', authController.isLoggedIn, viewsController.getOverview);
+router.get('/tour/:slug', authController.isLoggedIn, viewsController.getTour);
+router.get('/login', authController.isLoggedIn, viewsController.getLoginForm);
+router.get('/me', authController.protect, viewsController.getAccount);
 
+router.post(
+  '/submit-user-data',
+  authController.protect,
+  viewsController.updateUserData
+);
 
 module.exports = router;
