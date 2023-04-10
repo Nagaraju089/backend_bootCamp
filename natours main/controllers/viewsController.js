@@ -3,6 +3,7 @@ const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
+
 exports.getOverview = catchAsync(async (req, res, next) => {
   // 1) Get tour data from collection
   const tours = await Tour.find();
@@ -64,3 +65,16 @@ exports.updateUserData = catchAsync(async (req, res, next) => {
     user: updatedUser
   });
 });
+
+exports.getLoginForm= (req, res) => {
+  res.status(200).render('Login', {
+    title: 'Log into your account'
+  })
+}
+
+exports.getAccount = (req, res) => {
+  res.status(200).render('account', {
+    title: 'Your account'
+  });
+};
+
